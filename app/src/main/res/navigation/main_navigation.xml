@@ -26,7 +26,7 @@
         tools:layout="@layout/title_fragment">
         <action
             android:id="@+id/action_title_to_game"
-            app:destination="@id/game_destination"
+            app:destination="@+id/game_destination"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:launchSingleTop="true"
