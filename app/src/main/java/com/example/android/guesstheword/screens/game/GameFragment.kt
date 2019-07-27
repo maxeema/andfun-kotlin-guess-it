@@ -54,11 +54,11 @@ class GameFragment : Fragment(), AnkoLogger {
 
         info("${viewModel.hashCode()} viewModel is $viewModel")
 
-        viewModel.word.observe(this, Observer { binding.wordText.text = it!! })
-        viewModel.score.observe(this, Observer { binding.scoreText.text = it!!.toString() })
-        viewModel.status.observe(this, Observer {
-            if (it == OVER)
-                findNavController().navigate(GameFragmentDirections.actionGameToScore(viewModel.score.value!!))
+        viewModel.getWord().observe(this, Observer { binding.wordText.text = it!! })
+        viewModel.getScore().observe(this, Observer { binding.scoreText.text = it!!.toString() })
+        viewModel.getStatus().observe(this, Observer { status ->
+            if (status == OVER)
+                findNavController().navigate(GameFragmentDirections.actionGameToScore(viewModel.getScore().value!!))
         })
 
         return binding.root
@@ -67,7 +67,7 @@ class GameFragment : Fragment(), AnkoLogger {
     //
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        info("${hashCode()} onAttach")
+        info("${hashCode()} onAttach, context: $context")
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +83,7 @@ class GameFragment : Fragment(), AnkoLogger {
     }
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        info("${hashCode()} onViewStateRestored, savedInstanceState $savedInstanceState")
+        info("${hashCode()} onViewStateRestored, savedInstanceState: $savedInstanceState")
     }
     override fun onResume() {
         super.onResume()
@@ -111,11 +111,11 @@ class GameFragment : Fragment(), AnkoLogger {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        info("${hashCode()} onViewCreated, savedInstanceState $savedInstanceState")
+        info("${hashCode()} onViewCreated, savedInstanceState: $savedInstanceState")
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        info("${hashCode()} onSaveInstanceState, outState $outState")
+        info("${hashCode()} onSaveInstanceState, outState: $outState")
     }
 
 }

@@ -1,42 +1,37 @@
 package com.example.android.guesstheword.screens.game
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.android.guesstheword.BuildConfig
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 
+fun <T> MutableLiveData<T>.toImmutable() = this as LiveData<T>
+
 class GameViewModel(state: SavedStateHandle) : ViewModel(), AnkoLogger {
 
-    enum class Status {
-        ACTIVE, OVER
-    }
+    enum class Status { ACTIVE, OVER }
 
     private companion object {
-        private const val KEY_LIST = "list"
-        private const val KEY_WORD = "word"
-        private const val KEY_SCORE = "score"
+        private const val KEY_LIST   = "list"
+        private const val KEY_WORD   = "word"
+        private const val KEY_SCORE  = "score"
         private const val KEY_STATUS = "status"
     }
 
-    init {
-        if (BuildConfig.DEBUG)
-            info("init state: $state")
-    }
+    init { if (BuildConfig.DEBUG) info("init state: $state") }
 
-    val status = state.getLiveData(KEY_STATUS, Status.ACTIVE)
-    val score = state.getLiveData(KEY_SCORE, 0)
-    val list = state.getLiveData<MutableList<String>>(KEY_LIST).apply {
+    private val status = state.getLiveData(KEY_STATUS, Status.ACTIVE)
+    private val score = state.getLiveData(KEY_SCORE, 0)
+    private val list = state.getLiveData<MutableList<String>>(KEY_LIST).apply {
         if (value == null) value = shuffleList()
     }
-    val word = state.getLiveData<String>(KEY_WORD).apply {
+    private val word = state.getLiveData<String>(KEY_WORD).apply {
         if (value == null) value = list.value!!.removeAt(0)
     }
 
-    init {
-        if (BuildConfig.DEBUG)
-            info("${hashCode()} init")
-    }
+    fun getStatus() = status.toImmutable()
+    fun getScore()     = score.toImmutable()
+    fun getWord()    = word.toImmutable()
 
     override fun onCleared() {
         super.onCleared()
