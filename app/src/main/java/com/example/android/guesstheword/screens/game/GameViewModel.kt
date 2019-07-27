@@ -1,6 +1,9 @@
 package com.example.android.guesstheword.screens.game
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import com.example.android.guesstheword.BuildConfig
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
@@ -47,13 +50,13 @@ class GameViewModel(state: SavedStateHandle) : ViewModel(), AnkoLogger {
         }
     }
 
-    fun onSkip() = status.value.takeIf { it == Status.ACTIVE }?.apply {
-        score.value = score.value!!.dec()
+    fun onSkip() = score.takeIf { status.value == Status.ACTIVE }?.apply {
+        value = value!!.dec()
         nextWord()
     }
 
-    fun onCorrect() = status.value.takeIf { it == Status.ACTIVE }?.apply {
-        score.value = score.value!!.inc()
+    fun onCorrect() = score.takeIf { status.value == Status.ACTIVE }?.apply {
+        value = value!!.inc()
         nextWord()
     }
 
