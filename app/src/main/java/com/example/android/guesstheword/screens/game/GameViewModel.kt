@@ -1,16 +1,16 @@
 package com.example.android.guesstheword.screens.game
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import com.example.android.guesstheword.BuildConfig
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 
 fun <T> MutableLiveData<T>.toImmutable() = this as LiveData<T>
 
-class GameViewModel(state: SavedStateHandle) : ViewModel(), AnkoLogger {
+class GameViewModel(app: Application, state: SavedStateHandle) : AndroidViewModel(app), AnkoLogger {
 
     enum class Status { ACTIVE, OVER }
 
@@ -21,7 +21,7 @@ class GameViewModel(state: SavedStateHandle) : ViewModel(), AnkoLogger {
         private const val KEY_STATUS = "status"
     }
 
-    init { if (BuildConfig.DEBUG) info("init state: $state") }
+    init { info("${hashCode()} init app: $app, state: $state") }
 
     private val status = state.getLiveData(KEY_STATUS, Status.ACTIVE)
     private val score = state.getLiveData(KEY_SCORE, 0)
@@ -38,8 +38,7 @@ class GameViewModel(state: SavedStateHandle) : ViewModel(), AnkoLogger {
 
     override fun onCleared() {
         super.onCleared()
-        if (BuildConfig.DEBUG)
-            info("${hashCode()} onCleared")
+        info("${hashCode()} onCleared")
     }
 
     private fun nextWord() {
