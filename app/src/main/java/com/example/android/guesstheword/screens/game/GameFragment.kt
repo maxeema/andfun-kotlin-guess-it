@@ -23,10 +23,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.navigation.fragment.findNavController
 import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.GameFragmentBinding
+import com.example.android.guesstheword.screens.game.GameViewModel.Status.OVER
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 
@@ -35,113 +38,84 @@ import org.jetbrains.anko.info
  */
 class GameFragment : Fragment(), AnkoLogger {
 
-    private lateinit var viewModel : GameViewModel
+    private val viewModel by viewModels<GameViewModel>(factoryProducer = {
+        SavedStateViewModelFactory(this)
+    })
 
     private lateinit var binding: GameFragmentBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        info ( "${hashCode()} onCreateView, savedInstanceState $savedInstanceState")
+                              savedInstanceState: Bundle?): View {
+        info("${hashCode()} onCreateView, savedInstanceState $savedInstanceState")
 
-        // Inflate view and obtain an instance of the binding class
-        binding = DataBindingUtil.inflate(
-                inflater,
-                R.layout.game_fragment,
-                container,
-                false
-        )
+        binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
+        binding.correctButton.setOnClickListener { viewModel.onCorrect() }
+        binding.skipButton.setOnClickListener { viewModel.onSkip() }
 
-        viewModel = ViewModelProviders.of(this).get(GameViewModel::class.java)
+        info("${viewModel.hashCode()} viewModel is $viewModel")
 
-        info ( "${viewModel.hashCode()} viewModel is $viewModel")
-
-        binding.correctButton.setOnClickListener {
-            viewModel.onCorrect()
-            updateWordText()
-            updateScoreText()
-        }
-        binding.skipButton.setOnClickListener {
-            viewModel.onSkip()
-            updateWordText()
-            updateScoreText()
-        }
-
-        updateScoreText()
-        updateWordText()
+        viewModel.word.observe(this, Observer { binding.wordText.text = it!! })
+        viewModel.score.observe(this, Observer { binding.scoreText.text = it!!.toString() })
+        viewModel.status.observe(this, Observer {
+            if (it == OVER)
+                findNavController().navigate(GameFragmentDirections.actionGameToScore(viewModel.score.value!!))
+        })
 
         return binding.root
-    }
-
-
-
-    /**
-     * Called when the game is finished
-     */
-    private fun gameFinished() {
-        val action = GameFragmentDirections.actionGameToScore(viewModel.score)
-        findNavController(this).navigate(action)
-    }
-
-
-    /** Methods for updating the UI **/
-
-    private fun updateWordText() {
-        binding.wordText.text = viewModel.word
-
-    }
-
-    private fun updateScoreText() {
-        binding.scoreText.text = viewModel.score.toString()
     }
 
     //
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        info ( "${hashCode()} onAttach")
+        info("${hashCode()} onAttach")
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        info ( "${hashCode()} onCreate")
+        info("${hashCode()} onCreate")
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        info ( "${hashCode()} onActivityCreated")
+        info("${hashCode()} onActivityCreated")
     }
     override fun onStart() {
         super.onStart()
-        info ( "${hashCode()} onStart")
+        info("${hashCode()} onStart")
     }
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        info ( "${hashCode()} onViewStateRestored, savedInstanceState $savedInstanceState")
+        info("${hashCode()} onViewStateRestored, savedInstanceState $savedInstanceState")
     }
     override fun onResume() {
         super.onResume()
-        info ( "${hashCode()} onResume")
+        info("${hashCode()} onResume")
     }
     override fun onDestroy() {
         super.onDestroy()
-        info ( "${hashCode()} onDestroy")
+        info("${hashCode()} onDestroy")
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        info ( "${hashCode()} onDestroyView")
+        info("${hashCode()} onDestroyView")
     }
     override fun onDetach() {
         super.onDetach()
-        info ( "${hashCode()} onDetach")
+        info("${hashCode()} onDetach")
     }
     override fun onStop() {
         super.onStop()
-        info ( "${hashCode()} onStop")
+        info("${hashCode()} onStop")
     }
     override fun onPause() {
         super.onPause()
-        info ( "${hashCode()} onPause")
+        info("${hashCode()} onPause")
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        info ( "${hashCode()} onViewCreated, savedInstanceState $savedInstanceState")
+        info("${hashCode()} onViewCreated, savedInstanceState $savedInstanceState")
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        info("${hashCode()} onSaveInstanceState, outState $outState")
     }
 
 }
