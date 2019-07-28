@@ -50,12 +50,11 @@ class GameFragment : Fragment(), AnkoLogger {
         info("${hashCode()} onCreateView, savedInstanceState $savedInstanceState")
 
         binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
+        binding.lifecycleOwner = this
         binding.model = model
 
         info("${model.hashCode()} model is $model")
 
-        model.getWord().observe(this, Observer { binding.wordText.text = it!! })
-        model.getScore().observe(this, Observer { binding.scoreText.text = it!!.toString() })
         model.getStatus().observe(this, Observer { status ->
             if (status == OVER)
                 findNavController().navigate(GameFragmentDirections.actionGameToScore(model.getScore().value!!))

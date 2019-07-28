@@ -19,7 +19,7 @@ class GameViewModel(app: Application, state: SavedStateHandle)
         private const val KEY_STATUS = "status"
         private const val KEY_ELAPSED = "elapsed"
         // Timer constants
-private const val TIMER_DURATION     = 6*1000L + 999/*let user see 01:00, not 00:59 at the beginning of the game*/
+        private const val TIMER_DURATION     = 60*1000L + 999/*let user see 01:00, not 00:59 at the beginning of the game*/
         private const val TIMER_TICK_TIMEOUT = 1000L
     }
 
