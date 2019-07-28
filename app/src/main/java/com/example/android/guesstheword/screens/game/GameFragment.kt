@@ -18,6 +18,7 @@ package com.example.android.guesstheword.screens.game
 
 import android.content.Context
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.GameFragmentBinding
@@ -38,7 +40,7 @@ import org.jetbrains.anko.info
  */
 class GameFragment : Fragment(), AnkoLogger {
 
-    private val viewModel by viewModels<GameViewModel>(factoryProducer = {
+    private val model by viewModels<GameViewModel>(factoryProducer = {
         SavedStateViewModelFactory(this)
     })
 
@@ -49,17 +51,20 @@ class GameFragment : Fragment(), AnkoLogger {
         info("${hashCode()} onCreateView, savedInstanceState $savedInstanceState")
 
         binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
-        binding.correctButton.setOnClickListener { viewModel.onCorrect() }
-        binding.skipButton.setOnClickListener { viewModel.onSkip() }
+        binding.correctButton.setOnClickListener { model.onCorrect() }
+        binding.skipButton.setOnClickListener { model.onSkip() }
 
-        info("${viewModel.hashCode()} viewModel is $viewModel")
+        info("${model.hashCode()} model is $model")
 
-        viewModel.getWord().observe(this, Observer { binding.wordText.text = it!! })
-        viewModel.getScore().observe(this, Observer { binding.scoreText.text = it!!.toString() })
-        viewModel.getStatus().observe(this, Observer { status ->
+        model.getWord().observe(this, Observer { binding.wordText.text = it!! })
+        model.getScore().observe(this, Observer { binding.scoreText.text = it!!.toString() })
+        model.getStatus().observe(this, Observer { status ->
             if (status == OVER)
-                findNavController().navigate(GameFragmentDirections.actionGameToScore(viewModel.getScore().value!!))
+                findNavController().navigate(GameFragmentDirections.actionGameToScore(model.getScore().value!!))
         })
+        model.getElapsed().observe(this, Observer { binding.timerText.text = DateUtils.formatElapsedTime(it.div(1000)) })
+
+        lifecycle.addObserver(model)
 
         return binding.root
     }
