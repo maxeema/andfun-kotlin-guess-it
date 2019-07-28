@@ -2,8 +2,8 @@ package com.example.android.guesstheword.screens.score
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.android.guesstheword.screens.game.asMutable
-import com.example.android.guesstheword.screens.game.toImmutable
+import com.example.android.guesstheword.asImmutable
+import com.example.android.guesstheword.asMutable
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 
@@ -13,10 +13,11 @@ class ScoreViewModel(value: Int) : ViewModel(), AnkoLogger {
         info("score view model init with '$value'")
     }
 
-    val score          = MutableLiveData(value).toImmutable()
-    val playAgainEvent = MutableLiveData(false).toImmutable()
+    val score          = MutableLiveData(value).asImmutable()
+    val playAgainEvent = MutableLiveData(false).asImmutable()
 
     fun playAgain() {
+        info("play again called")
         playAgainEvent.asMutable().value = true
     }
 

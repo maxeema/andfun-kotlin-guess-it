@@ -3,12 +3,10 @@ package com.example.android.guesstheword.screens.game
 import android.app.Application
 import android.os.CountDownTimer
 import androidx.lifecycle.*
+import com.example.android.guesstheword.asImmutable
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 
-//TODO move to Extensions
-fun <T> MutableLiveData<T>.toImmutable() = this as LiveData<T>
-fun <T> LiveData<T>.asMutable()    = this as MutableLiveData<T>
 
 class GameViewModel(app: Application, state: SavedStateHandle)
     : AndroidViewModel(app), AnkoLogger, LifecycleObserver {
@@ -21,7 +19,7 @@ class GameViewModel(app: Application, state: SavedStateHandle)
         private const val KEY_STATUS = "status"
         private const val KEY_ELAPSED = "elapsed"
         // Timer constants
-        private const val TIMER_DURATION     = 60*1000L + 999/*let user see 01:00, not 00:59 at the beginning of the game*/
+private const val TIMER_DURATION     = 6*1000L + 999/*let user see 01:00, not 00:59 at the beginning of the game*/
         private const val TIMER_TICK_TIMEOUT = 1000L
     }
 
@@ -31,10 +29,10 @@ class GameViewModel(app: Application, state: SavedStateHandle)
 
     enum class Status { CREATED, PAUSED, ACTIVE, OVER }
 
-    fun getStatus() = status.toImmutable()
-    fun getScore()     = score.toImmutable()
-    fun getWord()    = word.toImmutable()
-    fun getElapsed()  = elapsed.toImmutable()
+    fun getStatus() = status.asImmutable()
+    fun getScore()     = score.asImmutable()
+    fun getWord()    = word.asImmutable()
+    fun getElapsed()  = elapsed.asImmutable()
 
     @OnLifecycleEvent(value=Lifecycle.Event.ON_RESUME)
     private fun start() = status.value!!.takeIf { it < Status.ACTIVE }?.apply {
