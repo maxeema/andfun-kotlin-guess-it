@@ -6,7 +6,9 @@ import androidx.lifecycle.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 
+//TODO move to Extensions
 fun <T> MutableLiveData<T>.toImmutable() = this as LiveData<T>
+fun <T> LiveData<T>.asMutable()    = this as MutableLiveData<T>
 
 class GameViewModel(app: Application, state: SavedStateHandle)
     : AndroidViewModel(app), AnkoLogger, LifecycleObserver {

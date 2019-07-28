@@ -41,10 +41,10 @@ class ScoreFragment : Fragment(), AnkoLogger {
         })
 
         val binding = DataBindingUtil.inflate<ScoreFragmentBinding>(inflater, R.layout.score_fragment, container, false)
-
-        binding.playAgainButton.setOnClickListener { findNavController().navigate(ScoreFragmentDirections.actionRestart()) }
+        binding.model = model
 
         model.score.observe(this, Observer { binding.scoreText.text = it.toString() })
+        model.playAgainEvent.observe(this, Observer { if (it) findNavController().navigate(ScoreFragmentDirections.actionRestart()) })
 
         return binding.root
     }

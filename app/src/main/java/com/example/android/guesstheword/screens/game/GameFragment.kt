@@ -51,8 +51,7 @@ class GameFragment : Fragment(), AnkoLogger {
         info("${hashCode()} onCreateView, savedInstanceState $savedInstanceState")
 
         binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
-        binding.correctButton.setOnClickListener { model.onCorrect() }
-        binding.skipButton.setOnClickListener { model.onSkip() }
+        binding.model = model
 
         info("${model.hashCode()} model is $model")
 
