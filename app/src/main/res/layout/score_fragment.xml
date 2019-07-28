@@ -19,7 +19,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="model" type="com.example.android.guesstheword.screens.score.ScoreViewModel" />
+        <import type="com.example.android.guesstheword.screens.score.ScoreViewModel"/>
+        <variable name="model" type="ScoreViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
