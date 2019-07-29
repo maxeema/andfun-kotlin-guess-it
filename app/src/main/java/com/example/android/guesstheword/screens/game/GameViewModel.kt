@@ -10,7 +10,7 @@ import org.jetbrains.anko.info
 
 
 class GameViewModel(app: Application, state: SavedStateHandle)
-    : AndroidViewModel(app), AnkoLogger, LifecycleObserver {
+                    : AndroidViewModel(app), AnkoLogger, LifecycleObserver {
 
     private companion object {
         // Storage keys
@@ -24,18 +24,27 @@ class GameViewModel(app: Application, state: SavedStateHandle)
         private const val TIMER_TICK_TIMEOUT = 1000L
     }
 
+    enum class Status { CREATED, PAUSED, ACTIVE, OVER }
+
+    enum class BuzzEvent(val pattern: LongArray) {
+        CORRECT         (longArrayOf(0, 50)),
+        SKIP            (longArrayOf(0, 75, 75, 75)),
+        GAME_OVER       (longArrayOf(0, 1000)),
+        COUNTDOWN_PANIC (longArrayOf(0, 150))
+    }
+
     init {
         info("${hashCode()} init app: $app, state: $state")
     }
 
-    enum class Status { CREATED, PAUSED, ACTIVE, OVER }
-
-    fun status() = status.asImmutable()
-    fun score()     = score.asImmutable()
+    fun status()  = status.asImmutable()
+    fun score()   = score.asImmutable()
     fun word()    = word.asImmutable()
     fun elapsed() = Transformations.map(elapsed) {
         DateUtils.formatElapsedTime(it/1000)
     }
+
+    var buzEventObserver: Observer<BuzzEvent>? = null
 
     @OnLifecycleEvent(value=Lifecycle.Event.ON_RESUME)
     private fun start() = status.value!!.takeIf { it < Status.ACTIVE }?.apply {
@@ -52,6 +61,7 @@ class GameViewModel(app: Application, state: SavedStateHandle)
     private fun finish() = status.value!!.takeIf { it < Status.OVER }?.run {
         info(" model finish called on status ${status.value}")
         status.value = Status.OVER
+        buzEventObserver?.onChanged(BuzzEvent.GAME_OVER)
         timer = null
         true
     } ?: false
@@ -59,10 +69,12 @@ class GameViewModel(app: Application, state: SavedStateHandle)
     fun onSkip() = status.value.takeIf { it == Status.ACTIVE }?.apply {
         score.value = score.value!!.dec()
         nextWord()
+        buzEventObserver?.onChanged(BuzzEvent.SKIP)
     }.run { Unit }
     fun onCorrect() = status.value!!.takeIf { it == Status.ACTIVE }?.apply {
         score.value = score.value!!.inc()
         nextWord()
+        buzEventObserver?.onChanged(BuzzEvent.CORRECT)
     }.run { Unit }
 
     private val status = state.getLiveData(KEY_STATUS, Status.CREATED)
@@ -86,6 +98,8 @@ class GameViewModel(app: Application, state: SavedStateHandle)
             override fun onTick(ela: Long) {
                 info("onTick $ela")
                 elapsed.value = ela
+                if (ela < 10*1000)
+                    buzEventObserver?.onChanged(BuzzEvent.COUNTDOWN_PANIC)
             }
         }
         set(value) {

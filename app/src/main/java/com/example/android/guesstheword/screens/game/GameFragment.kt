@@ -17,10 +17,14 @@
 package com.example.android.guesstheword.screens.game
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -58,10 +62,21 @@ class GameFragment : Fragment(), AnkoLogger {
             if (status == OVER)
                 findNavController().navigate(GameFragmentDirections.actionGameToScore(model.score().value!!))
         })
+        model.buzEventObserver = Observer { buzz(it)  }
 
         lifecycle.addObserver(model)
 
         return binding.root
+    }
+
+    private fun buzz(buzz: GameViewModel.BuzzEvent) {
+        activity?.getSystemService<Vibrator>()?.apply {
+            info("buzz called $buzz, has vibrator: ${this.hasVibrator()}, on $this")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                vibrate(VibrationEffect.createWaveform(buzz.pattern, -1))
+            else
+                vibrate(buzz.pattern, -1)
+        }
     }
 
     //
