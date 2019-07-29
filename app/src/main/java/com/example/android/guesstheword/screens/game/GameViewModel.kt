@@ -123,7 +123,7 @@ class GameViewModel(app: Application, state: SavedStateHandle)
     /**
      * Resets the list of words and randomizes the order
      */
-    private fun shuffledList()= mutableListOf(
+    private fun shuffledList() : MutableList<String> = mutableListOf(
         "queen",
         "basketball",
 //        "hospital",
@@ -145,8 +145,11 @@ class GameViewModel(app: Application, state: SavedStateHandle)
 //        "bag",
 //        "bubble",
         "car"
-    ).apply {
+    ).run {
         this.shuffle()
+        if (first() == word?.value)
+            return@run shuffledList()
+        this
     }
 
 }
