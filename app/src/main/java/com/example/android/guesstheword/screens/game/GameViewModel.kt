@@ -2,6 +2,7 @@ package com.example.android.guesstheword.screens.game
 
 import android.app.Application
 import android.os.CountDownTimer
+import android.text.format.DateUtils
 import androidx.lifecycle.*
 import com.example.android.guesstheword.asImmutable
 import org.jetbrains.anko.AnkoLogger
@@ -13,10 +14,10 @@ class GameViewModel(app: Application, state: SavedStateHandle)
 
     private companion object {
         // Storage keys
-        private const val KEY_LIST   = "list"
-        private const val KEY_WORD   = "word"
-        private const val KEY_SCORE  = "score"
-        private const val KEY_STATUS = "status"
+        private const val KEY_LIST    = "list"
+        private const val KEY_WORD    = "word"
+        private const val KEY_SCORE   = "score"
+        private const val KEY_STATUS  = "status"
         private const val KEY_ELAPSED = "elapsed"
         // Timer constants
         private const val TIMER_DURATION     = 60*1000L + 999/*let user see 01:00, not 00:59 at the beginning of the game*/
@@ -29,10 +30,12 @@ class GameViewModel(app: Application, state: SavedStateHandle)
 
     enum class Status { CREATED, PAUSED, ACTIVE, OVER }
 
-    fun getStatus() = status.asImmutable()
-    fun getScore()     = score.asImmutable()
-    fun getWord()    = word.asImmutable()
-    fun getElapsed()  = elapsed.asImmutable()
+    fun status() = status.asImmutable()
+    fun score()     = score.asImmutable()
+    fun word()    = word.asImmutable()
+    fun elapsed() = Transformations.map(elapsed) {
+        DateUtils.formatElapsedTime(it/1000)
+    }
 
     @OnLifecycleEvent(value=Lifecycle.Event.ON_RESUME)
     private fun start() = status.value!!.takeIf { it < Status.ACTIVE }?.apply {

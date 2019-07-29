@@ -18,7 +18,6 @@ package com.example.android.guesstheword.screens.game
 
 import android.content.Context
 import android.os.Bundle
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,11 +54,10 @@ class GameFragment : Fragment(), AnkoLogger {
 
         info("${model.hashCode()} model is $model")
 
-        model.getStatus().observe(this, Observer { status ->
+        model.status().observe(this, Observer { status ->
             if (status == OVER)
-                findNavController().navigate(GameFragmentDirections.actionGameToScore(model.getScore().value!!))
+                findNavController().navigate(GameFragmentDirections.actionGameToScore(model.score().value!!))
         })
-        model.getElapsed().observe(this, Observer { binding.timerText.text = DateUtils.formatElapsedTime(it.div(1000)) })
 
         lifecycle.addObserver(model)
 
