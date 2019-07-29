@@ -27,7 +27,7 @@ class GameViewModel(app: Application, state: SavedStateHandle)
     enum class Status { CREATED, PAUSED, ACTIVE, OVER }
 
     enum class BuzzEvent(val pattern: LongArray) {
-        CORRECT         (longArrayOf(0, 50)),
+        CORRECT         (longArrayOf(150, 50)),
         SKIP            (longArrayOf(0, 75, 75, 75)),
         GAME_OVER       (longArrayOf(0, 1000)),
         COUNTDOWN_PANIC (longArrayOf(0, 150))
