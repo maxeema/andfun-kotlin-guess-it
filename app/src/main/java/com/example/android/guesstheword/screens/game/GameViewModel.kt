@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.example.android.guesstheword.asImmutable
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
+import java.util.concurrent.TimeUnit
 
 
 class GameViewModel(app: Application, state: SavedStateHandle)
@@ -20,8 +21,8 @@ class GameViewModel(app: Application, state: SavedStateHandle)
         private const val KEY_STATUS  = "status"
         private const val KEY_ELAPSED = "elapsed"
         // Timer constants
-        private const val TIMER_DURATION     = 60*1000L + 999/*let user see 01:00, not 00:59 at the beginning of the game*/
-        private const val TIMER_TICK_TIMEOUT = 1000L
+        private val TIMER_DURATION     = TimeUnit.MINUTES.toMillis(1) + 999/*let user see 01:00, not 00:59 at the beginning of the game*/
+        private val TIMER_TICK_TIMEOUT = TimeUnit.SECONDS.toMillis(1)
     }
 
     enum class Status { CREATED, PAUSED, ACTIVE, OVER }
