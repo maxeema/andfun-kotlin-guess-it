@@ -9,7 +9,6 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.info
 import java.util.concurrent.TimeUnit
 
-
 class GameViewModel(app: Application, state: SavedStateHandle)
                     : AndroidViewModel(app), AnkoLogger, LifecycleObserver {
 
